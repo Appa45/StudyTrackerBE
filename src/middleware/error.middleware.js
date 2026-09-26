@@ -9,7 +9,8 @@ export function notFoundHandler(req, res) {
 }
 
 export function errorHandler(error, req, res, next) {
-  console.error(error);
+  console.error('API ERROR:', error);
+  console.error('STACK:', error?.stack);
 
   if (error instanceof ZodError) {
     return res.status(400).json({
@@ -23,16 +24,23 @@ export function errorHandler(error, req, res, next) {
   }
 
   if (error instanceof mongoose.Error.CastError) {
-    return res.status(400).json({ success: false, error: 'Invalid resource id.' });
+    return res.status(400).json({
+      success: false,
+      error: 'Invalid resource id.'
+    });
   }
 
   if (error?.code === 11000) {
-    return res.status(409).json({ success: false, error: 'A record with that value already exists.' });
+    return res.status(409).json({
+      success: false,
+      error: 'A record with that value already exists.'
+    });
   }
 
   const status = error.statusCode || 500;
+
   return res.status(status).json({
     success: false,
-    error: status === 500 ? 'Internal server error.' : error.message
+    error: error.message || 'Internal server error.'
   });
 }
