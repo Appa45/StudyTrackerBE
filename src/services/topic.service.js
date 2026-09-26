@@ -50,12 +50,25 @@ export async function listTopics(userId, filters) {
 }
 
 export async function getTopic(userId, topicId) {
-  const topic = await Topic.findOne(ensureOwnedTopicFilter(userId, topicId));
+  console.log("========== GET TOPIC DEBUG ==========");
+  console.log("userId:", userId);
+  console.log("topicId:", topicId);
+  console.log("valid topicId:", mongoose.isValidObjectId(topicId));
+
+  const filter = ensureOwnedTopicFilter(userId, topicId);
+
+  console.log("Mongo filter:", filter);
+
+  const topic = await Topic.findOne(filter);
+
+  console.log("Found topic:", topic);
+
   if (!topic) {
     const error = new Error('Topic not found.');
     error.statusCode = 404;
     throw error;
   }
+
   return topic;
 }
 
