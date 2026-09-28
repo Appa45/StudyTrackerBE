@@ -11,6 +11,7 @@ const router = express.Router();
 
 router.use(requireAuth);
 
+
 router.get('/profile', getProfile);
 
 router.patch('/profile', updateProfile);
