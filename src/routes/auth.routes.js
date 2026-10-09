@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { authRateLimiter } from '../middleware/rateLimit.middleware.js';
-import { login, logout, me, register } from '../controllers/auth.controller.js';
+import { login, logout, me, register,googleLogin } from '../controllers/auth.controller.js';
 import {
   forgotPassword,
   resetPasswordController,
@@ -10,6 +10,7 @@ import { requireAuth } from '../middleware/auth.middleware.js';
 
 const router = Router();
 
+router.post('/google', asyncHandler(googleLogin));
 router.post('/register', authRateLimiter, asyncHandler(register));
 router.post('/login', authRateLimiter, asyncHandler(login));
 router.post('/logout', requireAuth, asyncHandler(logout));

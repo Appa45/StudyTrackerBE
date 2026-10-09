@@ -45,6 +45,8 @@ app.get('/api/health', (req, res) => {
   res.json({ success: true, service: 'studytrack-backend', status: 'ok' });
 });
 
+app.use('/api/ai', aiRoutes);
+
 app.use("/api", lessonRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
