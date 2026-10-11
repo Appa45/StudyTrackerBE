@@ -6,7 +6,7 @@ export async function explainWithGemini({ question, topic }) {
     error.statusCode = 503;
     throw error;
   }
-
+//servies
   const model = env.geminiModel;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(env.geminiApiKey)}`;
   const prompt = [
