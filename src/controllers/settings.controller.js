@@ -9,27 +9,34 @@ import {
   updatePreferences,
   updateProfile
 } from '../services/settings.service.js';
-import { publicUser } from '../utils/sanitize.js';
 
-export async function get(req, res) {
-  const settings = await getSettings(req.userId);
-  res.json({ success: true, settings });
-}
+// Express 4 does not catch rejected promises in async handlers.
+// Without this, a thrown error (Zod failure, DB error, missing user)
+// means NO response is ever sent and the caller waits forever.
+// Not needed if you already use Express 5 or the express-async-errors package.
+const asyncHandler = (fn) => (req, res, next) =>
+  Promise.resolve(fn(req, res, next)).catch(next);
 
-export async function profile(req, res) {
+export const get = asyncHandler(async (req, res) => {
+  const data = await getSettings(req.userId);
+  // The Next.js page reads `result.data`
+  res.json({ success: true, data });
+});
+
+export const profile = asyncHandler(async (req, res) => {
   const input = profileSchema.parse(req.body);
-  const user = await updateProfile(req.userId, input);
-  res.json({ success: true, message: 'Profile updated successfully.', user: publicUser(user) });
-}
+  const data = await updateProfile(req.userId, input);
+  res.json({ success: true, message: 'Profile updated successfully.', data });
+});
 
-export async function preferences(req, res) {
+export const preferences = asyncHandler(async (req, res) => {
   const input = preferencesSchema.parse(req.body);
-  const user = await updatePreferences(req.userId, input);
-  res.json({ success: true, message: 'Preferences updated successfully.', user: publicUser(user) });
-}
+  const data = await updatePreferences(req.userId, input);
+  res.json({ success: true, message: 'Preferences updated successfully.', data });
+});
 
-export async function notifications(req, res) {
+export const notifications = asyncHandler(async (req, res) => {
   const input = notificationsSchema.parse(req.body);
-  const user = await updateNotifications(req.userId, input);
-  res.json({ success: true, message: 'Notification settings updated successfully.', user: publicUser(user) });
-}
+  const data = await updateNotifications(req.userId, input);
+  res.json({ success: true, message: 'Notification settings updated successfully.', data });
+});
